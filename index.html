@@ -14,6 +14,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            transition: background-color 0.3s ease;
         }
 
         .container {
@@ -80,10 +81,11 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
         }
 
         li.completed .task-description {
-            text-decoration: line-through; /* Strike-through only for the task description text */
+            text-decoration: line-through;
         }
 
         li.completed {
@@ -110,6 +112,23 @@
         .task-actions button.delete:hover {
             background-color: #c0392b;
         }
+
+        /* Dark mode styles */
+        body.dark-mode {
+            background-color: #2c3e50;
+        }
+
+        .container.dark-mode {
+            background-color: #34495e;
+        }
+
+        h1.dark-mode {
+            color: #ecf0f1;
+        }
+
+        button.dark-mode {
+            background-color: #8e44ad;
+        }
     </style>
 </head>
 <body>
@@ -120,6 +139,7 @@
             <button type="submit">Add Task</button>
         </form>
         <ul id="task-list"></ul>
+        <button id="toggle-theme">Light/Dark Mode</button>
     </div>
 
     <script>
@@ -148,11 +168,15 @@
         document.getElementById("add-task-form").addEventListener("submit", async (e) => {
             e.preventDefault();
             const description = document.getElementById("task-description").value;
+            if (description.trim() === '') return alert('Task description cannot be empty');
+
+
             await fetch(API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(description),
             });
+
             document.getElementById("task-description").value = ''; // Clear input field
             fetchTasks();
         });
@@ -168,6 +192,14 @@
             await fetch(`${API_URL}/${id}`, { method: "DELETE" });
             fetchTasks();
         }
+
+        // Dark Mode Toggle
+        document.getElementById("toggle-theme").addEventListener("click", () => {
+            document.body.classList.toggle('dark-mode');
+            document.querySelector('.container').classList.toggle('dark-mode');
+            document.querySelector('h1').classList.toggle('dark-mode');
+            document.querySelectorAll('button').forEach(button => button.classList.toggle('dark-mode'));
+        });
 
         // Initial fetch
         fetchTasks();
