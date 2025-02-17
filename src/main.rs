@@ -5,7 +5,8 @@ mod storage;
 use actix_web::{web, App, HttpResponse, HttpServer, Responder};
 use services::TaskManager;
 use std::sync::Mutex;
-
+use models::Task as ModelTask; // Alias Task as ModelTask to avoid conflict
+use actix_cors::Cors;
 // Shared state for the TaskManager
 struct AppState {
     task_manager: Mutex<TaskManager>,
@@ -32,7 +33,7 @@ async fn add_task(
 async fn complete_task(data: web::Data<AppState>, task_id: web::Path<u32>) -> impl Responder {
     let mut manager = data.task_manager.lock().unwrap();
     let id = task_id.into_inner();
-    if manager.complete_task(id) {
+    if manager.complete_task(id).is_some() {
         HttpResponse::Ok().body(format!("Task {} marked as completed.", id))
     } else {
         HttpResponse::NotFound().body(format!("Task with ID {} not found.", id))
@@ -43,7 +44,7 @@ async fn complete_task(data: web::Data<AppState>, task_id: web::Path<u32>) -> im
 async fn delete_task(data: web::Data<AppState>, task_id: web::Path<u32>) -> impl Responder {
     let mut manager = data.task_manager.lock().unwrap();
     let id = task_id.into_inner();
-    if manager.delete_task(id) {
+    if manager.delete_task(id).is_some() {
         HttpResponse::Ok().body(format!("Task {} deleted.", id))
     } else {
         HttpResponse::NotFound().body(format!("Task with ID {} not found.", id))
@@ -65,16 +66,17 @@ async fn main() -> std::io::Result<()> {
     });
 
     // Start the web server
-    println!("Starting server at http://localhost:8080");
+    println!("Starting server at http://localhost:8081/tasks");
     HttpServer::new(move || {
         App::new()
             .app_data(app_state.clone())
+            .wrap(Cors::permissive())
             .route("/tasks", web::get().to(list_tasks))
             .route("/tasks", web::post().to(add_task))
             .route("/tasks/{id}/complete", web::put().to(complete_task))
             .route("/tasks/{id}", web::delete().to(delete_task))
     })
-    .bind("127.0.0.1:8080")?
+    .bind("127.0.0.1:8081")?
     .run()
     .await
 }

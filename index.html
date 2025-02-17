@@ -4,17 +4,126 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fc;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        #add-task-form {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        #task-description {
+            width: 80%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        #task-description:focus {
+            border-color: #6c5ce7;
+        }
+
+        button {
+            background-color: #6c5ce7;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #5e4be2;
+        }
+
+        #task-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            background-color: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        li.completed .task-description {
+            text-decoration: line-through; /* Strike-through only for the task description text */
+        }
+
+        li.completed {
+            background-color: #d3f9d8;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .task-actions button {
+            background-color: #00b894;
+        }
+
+        .task-actions button.delete {
+            background-color: #e74c3c;
+        }
+
+        .task-actions button:hover {
+            background-color: #098a6e;
+        }
+
+        .task-actions button.delete:hover {
+            background-color: #c0392b;
+        }
+    </style>
 </head>
 <body>
-    <h1>Task Manager</h1>
-    <form id="add-task-form">
-        <input type="text" id="task-description" placeholder="Enter task description" required>
-        <button type="submit">Add Task</button>
-    </form>
-    <ul id="task-list"></ul>
+    <div class="container">
+        <h1>Task Manager</h1>
+        <form id="add-task-form">
+            <input type="text" id="task-description" placeholder="Enter task description" required>
+            <button type="submit">Add Task</button>
+        </form>
+        <ul id="task-list"></ul>
+    </div>
 
     <script>
-        const API_URL = "http://localhost:8080/tasks";
+        const API_URL = "http://localhost:8081/tasks";
 
         // Fetch and display tasks
         async function fetchTasks() {
@@ -22,12 +131,17 @@
             const tasks = await response.json();
             const taskList = document.getElementById("task-list");
             taskList.innerHTML = tasks.map(task => `
-                <li>
-                    ${task.description} (ID: ${task.id}, Completed: ${task.completed})
-                    <button onclick="completeTask(${task.id})">Complete</button>
-                    <button onclick="deleteTask(${task.id})">Delete</button>
-                </li>
-            `).join("");
+    <li class="${task.completed ? 'completed' : ''}">
+        <span class="task-description">${task.description}</span>
+        <div class="task-actions">
+            <button onclick="completeTask(${task.id})" ${task.completed ? 'disabled' : ''}>
+                ${task.completed ? 'Completed' : 'Complete'}
+            </button>
+            <button class="delete" onclick="deleteTask(${task.id})">Delete</button>
+        </div>
+    </li>
+`).join("");
+
         }
 
         // Add a new task
@@ -39,6 +153,7 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(description),
             });
+            document.getElementById("task-description").value = ''; // Clear input field
             fetchTasks();
         });
 
