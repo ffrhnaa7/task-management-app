@@ -1,70 +1,58 @@
-# Task Management App with Rust
+# Task Manager
 
-A simple full-stack task management app with **Rust** (backend) and **React** (frontend). It allows users to create, view, update, and delete tasks.
-
----
+A simple Task Manager web application built with **Vanilla JavaScript** for the frontend and **Actix-web** for the backend. This app allows users to manage their tasks by adding, completing, and deleting them through a RESTful API.
 
 ## Features
-- Add, view, update, and delete tasks.
-- Filter tasks by status (e.g., pending, completed).
-- Simple API integration for backend and frontend.
 
----
+- **Add a Task**: Submit a new task via a text input field.
+- **Complete a Task**: Mark tasks as completed.
+- **Delete a Task**: Remove tasks from the list.
+- **Dark Mode**: Toggle between light and dark modes.
 
-## Tech Stack
-- **Backend**: Rust, Actix-web / Rocket, SQLite
-- **Frontend**: React.js, Axios
+## Frontend (Vanilla JavaScript)
 
----
+The frontend is a simple web application using HTML, CSS, and JavaScript:
+- **Task Input**: Users can add tasks through an input field and a button.
+- **Task List**: Displays tasks with options to mark as complete or delete.
+- **Dark Mode Toggle**: Click to switch between dark and light themes.
 
-## Backend Setup
+**Key Elements**:
+- Tasks are fetched from the backend API using `fetch()`.
+- Tasks are displayed dynamically with event listeners to mark them complete or delete them.
+- Dark Mode toggles by changing CSS classes.
 
-1. **Install Rust**: Follow the [Rust Installation Guide](https://www.rust-lang.org/learn/get-started).
-2. **Create the project**:
-    ```bash
-    cargo new task-manager-backend
-    cd task-manager-backend
-    ```
-3. **Add dependencies** (Actix-web or Rocket) in `Cargo.toml`.
-4. **Create API Endpoints** to manage tasks (CRUD).
-5. **Run backend**:
-    ```bash
-    cargo run
-    ```
+## Backend (Actix-web)
 
----
+The backend is built using **Rust's Actix-web** framework, offering a simple REST API for managing tasks.
 
-## Frontend Setup
+### API Endpoints:
+- **GET /tasks**: List all tasks.
+- **POST /tasks**: Add a new task.
+- **PUT /tasks/{id}/complete**: Mark a task as completed.
+- **DELETE /tasks/{id}**: Delete a task.
 
-1. **Create React app**:
-    ```bash
-    npx create-react-app task-manager-frontend
-    cd task-manager-frontend
-    ```
-2. **Install Axios**:
-    ```bash
-    npm install axios
-    ```
-3. **Fetch tasks** from backend and display them.
-4. **Run frontend**:
-    ```bash
-    npm start
-    ```
+### Core Logic:
+- **TaskManager**: Manages task operations like adding, completing, and deleting tasks.
+- **AppState**: Stores the `TaskManager` instance shared across API endpoints using `Mutex` for thread safety.
+- **CORS**: Cross-Origin Resource Sharing (CORS) is enabled to allow requests from different origins.
 
----
+The backend uses an in-memory `TaskManager` to store tasks, with the option to extend it for persistent storage.
 
-## Running the App
+## Running the Application
 
-1. **Start backend**: `cargo run` in the `task-manager-backend` folder.
-2. **Start frontend**: `npm start` in the `task-manager-frontend` folder.
-3. Open the app at [http://localhost:3000](http://localhost:3000).
+### Frontend:
+1. Open `index.html` in your browser to interact with the frontend.
 
----
+### Backend:
+1. Run the backend with `cargo run` to start the server at `http://localhost:8081/tasks`.
+2. Use the frontend to interact with the backend via the API.
 
-## Future Features
-- Task categories
-- User authentication (JWT)
-- Task prioritization
+## Future Plans
 
----
+- **Upgrade Frontend Framework**: Improve the frontend by upgrading from Vanilla JavaScript to a more robust framework like **React** or **Vue.js** to enhance scalability and maintainability.
+- **Recommendation System**: Implement a recommendation system using **Python** to help users decide how to arrange their tasks based on their **MBTI** personality type. This system will suggest optimal task prioritization strategies tailored to individual preferences.
+- **User Authentication**: Add user authentication (login/logout) functionality to allow users to save their tasks for long-term use and maintain personalized task management.
 
+## Conclusion
+
+This application provides a basic task management system that can be extended further by adding features like authentication, task due dates, and persistent storage. You can toggle between dark and light modes, add new tasks, mark them as complete, and delete them using the backend API.
